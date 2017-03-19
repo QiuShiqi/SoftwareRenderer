@@ -14,13 +14,14 @@ public:
 	~Raster();
 
 	void drawPoint(int x, int y, Pixel pixel, int size);
-	void drawLine(Vector2<float> start, Vector2<float> end, Pixel pixel);
+	void drawLine(float2 start, float2 end, Pixel pixel);
 	
 	inline void setPixel(unsigned x, unsigned y, Pixel pixel);
 	void clear();
 
 	Pixel* getBuffer();
 	int getBufferSize();
+
 };
 
 #endif

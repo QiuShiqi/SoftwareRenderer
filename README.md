@@ -1,2 +1,2 @@
 # SoftwareRenderer
-A software renderer written in C ++
+A software renderer written in C++.

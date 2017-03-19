@@ -99,10 +99,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		raster.clear();
 
-		//»­µã
+		// »­µã
+		/*
 		for(int i = 0; i < 100; i++){
 			raster.drawPoint(rand() % 256, rand() % 256, Pixel(255, 0, 0), 3);
 		}
+		*/
+
+		raster.drawLine(float2(-11, 111), float2(233, 222), Pixel(255, 0, 0));	// »­Ïß
 
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
 		BitBlt(hDC, 0, 0, width, height, hMem, 0, 0, SRCCOPY);
