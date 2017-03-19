@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\Base">
+      <UniqueIdentifier>{51c7488f-7bee-42b6-beee-1fed8449ea8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Base">
+      <UniqueIdentifier>{fd53d269-8f0a-4f1f-bb55-abd71c70e017}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Raster.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Pixel.h">
+      <Filter>头文件\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>头文件\Base</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Raster.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Pixel.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
