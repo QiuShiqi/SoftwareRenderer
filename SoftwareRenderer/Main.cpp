@@ -21,7 +21,7 @@ LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
 
-	//注册
+	// Register window
 	WNDCLASSEX wndClass = {0};
 	wndClass.cbSize = sizeof(WNDCLASSEX);
 	wndClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
@@ -37,7 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	RegisterClassEx(&wndClass);
 
-	//创建
+	// Create window
 	HWND hwnd = CreateWindowEx(
 		NULL,
 		_T("Test"), _T("Test"),
@@ -48,11 +48,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		hInstance, NULL
 		);
 
-	//显示
+	// Show window
 	UpdateWindow(hwnd);
 	ShowWindow(hwnd, SW_SHOW);
 
-	//初始化DC
+	// Initialize DC
 	RECT rect = {0};
 	GetClientRect(hwnd, &rect);
 
@@ -81,10 +81,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	memset(buffer, 0, width * height * 4);
 
-	//光栅
+	// Raster
 	Raster raster(width, height, buffer);
 
-	//消息循环
+	// Message loop
 	MSG msg = {0};
 
 	while(true){
@@ -99,24 +99,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		raster.clear();
 
-		//绘制
-		int2 points[] = {
-			int2(10, 10),
-			int2(110, 10),
-			int2(110, 110),
-			int2(10, 110)
-		};
+		// Draw
+		raster.drawTriangle(int2(100, 10), int2(90, 60), int2(80, 200));
 
-		Pixel pixel[] = {
-			Pixel(255, 0, 0),
-			Pixel(0, 255, 0),
-			Pixel(0, 0, 255),
-			Pixel(255, 255, 255)
-		};
-
-		raster.drawRectangle(points, pixel);
-
-		//拷贝数据
+		// Copy data
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
 		BitBlt(hDC, 0, 0, width, height, hMem, 0, 0, SRCCOPY);
 	}

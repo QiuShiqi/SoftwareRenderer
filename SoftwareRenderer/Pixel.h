@@ -3,11 +3,11 @@
 
 class Pixel{
 public:
-	unsigned char cB, cG, cR, cA;	// windows下R和B相反
+	unsigned char cB, cG, cR, cA;	// Under the Windows system, R and B is opposite
 
 public:
 	Pixel(unsigned char r = 255, unsigned char g = 255, unsigned char b = 255, unsigned char a = 255);
-	static Pixel Interpolation(Pixel start, Pixel end, float percentage);	// 插值计算
+	static Pixel Interpolation(Pixel start, Pixel end, float percentage);	// Interpolation calculation
 };
 
 #endif

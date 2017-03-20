@@ -72,11 +72,39 @@ void Raster::drawRectangle(int2* points, const Pixel* pixel){
 	}
 }
 
+void Raster::drawTriangle(int2 point0, int2 point1, int2 point2){
+	Edge edges[] = {
+		Edge(point0.getX(), point0.getY(), point1.getX(), point1.getY()),
+		Edge(point1.getX(), point1.getY(), point2.getX(), point2.getY()),
+		Edge(point2.getX(), point2.getY(), point0.getX(), point0.getY())
+	};
+
+	// Find the longest edge
+	int length = edges[0].getEndY() - edges[0].getStartY();
+
+	for(int i = 1; i < 3; i++){
+		if(edges[i].getEndY() - edges[i].getStartY() > length){
+			length = i;
+		}
+	}
+
+	// Sort short edge
+	int index = 0;
+	int short1 = (index + 1) % 3;
+	int short2 = (index + 2) % 3;
+
+	// Begin draw
+	this->drawEdge(edges[index], edges[short1]);
+	this->drawEdge(edges[index], edges[short2]);
+
+}
+
+
 void Raster::drawLine(float2 start, float2 end, Pixel startPixel, Pixel endPixel){
 	float offsetX = start.getX() - end.getX();
 	float offsetY = start.getY() - end.getY();	
 
-	if(offsetX == 0 && offsetY == 0){	// æ‡¿Î÷ª”–“ª∏ˆµ„
+	if(offsetX == 0 && offsetY == 0){	// Ë∑ùÁ¶ªÂè™Êúâ‰∏Ä‰∏™ÁÇπ
 		setPixel(start.getX(), start.getY(), startPixel);
 	}
 
@@ -84,13 +112,13 @@ void Raster::drawLine(float2 start, float2 end, Pixel startPixel, Pixel endPixel
 		float maxX = Math::getMax(start.getX(), end.getX());
 		float minX = Math::getMin(start.getX(), end.getX());
 
-		float slope = offsetY / offsetX;	// –±¬ 
-		float length = maxX - minX;	// º∆À„≥§∂»
+		float slope = offsetY / offsetX;	// ÊñúÁéá
+		float length = maxX - minX;	// ËÆ°ÁÆóÈïøÂ∫¶
 
 		for(float x = minX; x <= maxX; x += 1.0f){
 			float y = start.getY() + (x - start.getX()) * slope;
 
-			//—’…´≤Â÷µº∆À„
+			//È¢úËâ≤ÊèíÂÄºËÆ°ÁÆó
 			float percent = (x - minX) / length;
 			Pixel pixel = Pixel::Interpolation(startPixel, endPixel, percent);
 
@@ -101,13 +129,13 @@ void Raster::drawLine(float2 start, float2 end, Pixel startPixel, Pixel endPixel
 		float maxY = Math::getMax(start.getY(), end.getY());
 		float minY = Math::getMin(start.getY(), end.getY());
 
-		float slope = offsetX / offsetY;	// –±¬ 
-		float length = maxY - minY;	// º∆À„≥§∂»
+		float slope = offsetX / offsetY;	// ÊñúÁéá
+		float length = maxY - minY;	// ËÆ°ÁÆóÈïøÂ∫¶
 
 		for(float y = minY; y <= maxY; y += 1.0f){
 			float x = start.getX() + (y - start.getY()) * slope;
 
-			//—’…´≤Â÷µº∆À„
+			//È¢úËâ≤ÊèíÂÄºËÆ°ÁÆó
 			float percent = (y - minY) / length;
 			Pixel pixel = Pixel::Interpolation(startPixel, endPixel, percent);
 
@@ -122,7 +150,7 @@ void Raster::drawArrays(DRAWMODE mode, const float2* points, int count){
 	switch(mode){
 	case DM_POINTS:
 		for(int i = 0; i < count; i++){
-			this->drawPoints(points[i], this->pixel);	// —’…´ƒ¨»œ÷µ
+			this->drawPoints(points[i], this->pixel);	// È¢úËâ≤ÈªòËÆ§ÂÄº
 		}
 
 		break;
@@ -171,6 +199,44 @@ void Raster::setPixel(unsigned x, unsigned y, Pixel pixel){
 
 void Raster::setPixelEx(unsigned x, unsigned y, Pixel pixel){
 	this->pBuffer[y * this->iWidth + x] = pixel;
+}
+
+void Raster::drawSpan(Span& span){
+	for(int x = span.getStartX(); x < span.getEndX(); x++){
+		this->setPixel(x, span.getY(), this->pixel);
+	}
+}
+
+void Raster::drawEdge(Edge longEdge, Edge shortEdge){
+
+	float offsetLongY = longEdge.getEndY() - longEdge.getStartY();
+	if(offsetLongY == 0){
+		return;
+	}
+
+	float offsetShortY = shortEdge.getEndY() - shortEdge.getStartY();
+	if(offsetShortY == 0){
+		return;
+	}
+
+	float offsetLongX = longEdge.getEndX() - longEdge.getStartX();
+	float stepLong = 1.0f / offsetLongY;
+	float lengthLong = (float)(shortEdge.getStartY() - longEdge.getStartY()) / offsetLongY;
+
+	float offsetShortX = shortEdge.getEndX() - shortEdge.getStartX();
+	float stepShort = 1.0f / offsetShortY;
+	float lengthShort = 0;
+
+	for(int y = shortEdge.getStartY(); y < shortEdge.getEndY(); y++){
+		int startX = longEdge.getStartX() + (int)(lengthLong * offsetLongX);
+		int endX = shortEdge.getStartX() + (int)(lengthShort * offsetShortX);
+
+		Span span(startX, endX, y);
+		this->drawSpan(span);
+
+		lengthShort += stepShort;
+		lengthLong += stepLong;
+	}
 }
 
 void Raster::clear(){

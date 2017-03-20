@@ -30,6 +30,12 @@
     <ClInclude Include="Math.h">
       <Filter>头文件\Base</Filter>
     </ClInclude>
+    <ClInclude Include="Span.h">
+      <Filter>头文件\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Edge.h">
+      <Filter>头文件\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raster.cpp">
@@ -39,6 +45,12 @@
       <Filter>源文件\Base</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Span.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Edge.cpp">
       <Filter>源文件\Base</Filter>
     </ClCompile>
   </ItemGroup>
