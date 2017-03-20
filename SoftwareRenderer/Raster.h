@@ -46,6 +46,8 @@ private:
 	// Triangle
 	void drawSpan(Span& span);
 	void drawEdge(Edge longEdge, Edge shortEdge);
+
+	bool isInRect(int2 point);
 };
 
 #endif

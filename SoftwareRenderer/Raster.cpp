@@ -73,6 +73,11 @@ void Raster::drawRectangle(int2* points, const Pixel* pixel){
 }
 
 void Raster::drawTriangle(int2 point0, int2 point1, int2 point2, Pixel pixel0, Pixel pixel1, Pixel pixel2){
+
+	if(!(this->isInRect(point0)) && !(this->isInRect(point1)) && !(this->isInRect(point2))){
+		return;
+	}
+
 	Edge edges[] = {
 		Edge(point0.getX(), point0.getY(), point1.getX(), point1.getY(), pixel0, pixel1),
 		Edge(point1.getX(), point1.getY(), point2.getX(), point2.getY(), pixel1, pixel2),
@@ -81,15 +86,18 @@ void Raster::drawTriangle(int2 point0, int2 point1, int2 point2, Pixel pixel0, P
 
 	// Find the longest edge
 	int length = edges[0].getEndY() - edges[0].getStartY();
+	int index = 0;
 
 	for(int i = 1; i < 3; i++){
-		if(edges[i].getEndY() - edges[i].getStartY() > length){
-			length = i;
+		int max = edges[i].getEndY() - edges[i].getStartY();
+
+		if(max > length){
+			length = max;
+			index = i;
 		}
 	}
 
 	// Sort short edge
-	int index = 0;
 	int short1 = (index + 1) % 3;
 	int short2 = (index + 2) % 3;
 
@@ -185,7 +193,7 @@ void Raster::drawArrays(DRAWMODE mode, const float2* points, int count){
 }
 
 void Raster::drawPoints(float2 dot, Pixel pixel){
-
+	this->drawPoint(dot.getX(), dot.getY(), pixel, 1);
 }
 
 void Raster::setPixel(unsigned x, unsigned y, Pixel pixel){
@@ -203,13 +211,20 @@ void Raster::setPixelEx(unsigned x, unsigned y, Pixel pixel){
 
 void Raster::drawSpan(Span& span){
 	float length = span.getEndX() - span.getStartX();
+	float step = 1.0f / length;
+	float percent = 0;
 
-	for(int x = span.getStartX(); x < span.getEndX(); x++){
+	// Vertical crop image
+	int startX = Math::getMax(span.getStartX(), 0);
+	int endX = Math::getMin(span.getEndX(), this->iWidth);
+	percent += (startX - span.getStartX()) / length;
 
-		float percent = (float)(x - span.getStartX()) / length;
+	for(int x = startX; x < endX; x++){
+
 		Pixel pixel = Pixel::Interpolation(span.getPixelStart(), span.getPixelEnd(), percent);
+		this->setPixelEx(x, span.getY(), pixel);
 
-		this->setPixel(x, span.getY(), pixel);
+		percent += step;
 	}
 }
 
@@ -229,11 +244,21 @@ void Raster::drawEdge(Edge longEdge, Edge shortEdge){
 	float stepLong = 1.0f / offsetLongY;
 	float lengthLong = (float)(shortEdge.getStartY() - longEdge.getStartY()) / offsetLongY;
 
+	// Horizontal crop image
+	int longStartY = Math::getMax(longEdge.getStartY(), 0);
+	int longEndY = Math::getMin(longEdge.getEndY(), this->iHeight);
+	lengthLong += (longStartY - longEdge.getStartY()) / offsetLongY;
+
 	float offsetShortX = shortEdge.getEndX() - shortEdge.getStartX();
 	float stepShort = 1.0f / offsetShortY;
 	float lengthShort = 0;
 
-	for(int y = shortEdge.getStartY(); y < shortEdge.getEndY(); y++){
+	// Horizontal crop image
+	int shortStartY = Math::getMax(shortEdge.getStartY(), 0);
+	int shortEndY = Math::getMin(shortEdge.getEndY(), this->iHeight);
+	lengthShort += (shortStartY - shortEdge.getStartY()) / offsetShortY;
+
+	for(int y = shortStartY; y < shortEndY; y++){
 		int startX = longEdge.getStartX() + (int)(lengthLong * offsetLongX);
 		int endX = shortEdge.getStartX() + (int)(lengthShort * offsetShortX);
 
@@ -245,6 +270,14 @@ void Raster::drawEdge(Edge longEdge, Edge shortEdge){
 
 		lengthLong += stepLong;
 		lengthShort += stepShort;
+	}
+}
+
+bool Raster::isInRect(int2 point){
+	if(point.getX() >= 0 && point.getX() <= this->iWidth && point.getY() >= 0 && point.getY() <= iHeight){
+		return true;
+	}else{
+		return false;
 	}
 }
 

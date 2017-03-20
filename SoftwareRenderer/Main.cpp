@@ -100,7 +100,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		raster.clear();
 
 		// Draw
-		raster.drawTriangle(int2(100, 10), int2(10, 100), int2(200, 100), Pixel(255, 0, 0), Pixel(0, 255, 0), Pixel(0, 0, 255));
+		raster.drawTriangle(int2(230, -80), int2(10, 280), int2(600, 280), Pixel(255, 0, 0), Pixel(0, 255, 0), Pixel(0, 0, 255));
 
 		// Copy data
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
