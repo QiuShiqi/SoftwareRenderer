@@ -36,6 +36,7 @@ public:
 };
 
 typedef Vector2<float> float2;
+typedef Vector2<int> int2;
 
 class Math{
 public:

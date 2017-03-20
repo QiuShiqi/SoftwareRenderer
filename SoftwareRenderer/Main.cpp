@@ -99,33 +99,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		raster.clear();
 
-		float2 points[] = {
-			float2(50, 50),
-			float2(200, 50),
-			float2(33, 88),
-			float2(159, 100)
+		//ªÊ÷∆
+		int2 points[] = {
+			int2(10, 10),
+			int2(110, 10),
+			int2(110, 110),
+			int2(10, 110)
 		};
 
-		float2 prev[2];
-		for(float t = 0; t < 1.0f; t += 0.01f){
-			float x = points[0].getX() * pow(1 - t, 3)
-				+ 3 * points[1].getX() * t * pow(1 - t, 2)
-				+ 3 * points[2].getX() * pow(t, 2) * (1 - t)
-				+ points[3].getX() * pow(t, 3);
+		Pixel pixel[] = {
+			Pixel(255, 0, 0),
+			Pixel(0, 255, 0),
+			Pixel(0, 0, 255),
+			Pixel(255, 255, 255)
+		};
 
-			float y = points[0].getY() * pow(1 - t, 3)
-				+ 3 * points[1].getY() * t * pow(1 - t, 2)
-				+ 3 * points[2].getY() * pow(t, 2) * (1 - t)
-				+ points[3].getY() * pow(t, 3);
-
-			if(t == 0){
-				prev[0] = float2(x, y);
-			}else{
-				prev[1] = float2(x, y);
-				raster.drawArrays(Raster::DM_LINES, prev, 2);
-				prev[0] = prev[1];
-			}
-		}
+		raster.drawRectangle(points, pixel);
 
 		//øΩ±¥ ˝æ›
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());

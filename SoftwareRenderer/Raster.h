@@ -23,16 +23,20 @@ public:
 	~Raster();
 
 	void drawPoint(int x, int y, Pixel pixel, int size);
-	
+	void drawRectangle(int x, int y, int width, int height);
+	void drawRectangle(int2* points, const Pixel* pixel);
+
 	void drawArrays(DRAWMODE mode, const float2* points, int count);
 
-	inline void setPixel(unsigned x, unsigned y, Pixel pixel);
 	void clear();
 
 	Pixel* getBuffer();
 	int getBufferSize();
 
 private:
+	inline void setPixel(unsigned x, unsigned y, Pixel pixel);
+	inline void setPixelEx(unsigned x, unsigned y, Pixel pixel);	// 没有边界检查
+
 	void drawLine(float2 start, float2 end, Pixel startPixel, Pixel endPixel);
 	void drawPoints(float2 dot, Pixel pixel);
 };

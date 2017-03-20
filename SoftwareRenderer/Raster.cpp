@@ -36,6 +36,42 @@ void Raster::drawPoint(int x, int y, Pixel pixel, int size){
 
 }
 
+void Raster::drawRectangle(int x, int y, int width, int height){
+	int left = Math::getMax(x, 0);
+	int top = Math::getMax(y, 0);
+
+	int right = Math::getMin(x + width, this->iWidth);
+	int bottom = Math::getMin(y + height, this->iHeight);
+
+	for(int i = left; i < right; i++){
+		for(int j = top; j < bottom; j++){
+			setPixelEx(i, j, this->pixel);
+		}
+	}
+}
+
+void Raster::drawRectangle(int2* points, const Pixel* pixel){
+	int left = Math::getMax((*(points)).getX(), 0);
+	int top = Math::getMax((*(points)).getY(), 0);
+
+	int right = Math::getMin((*(points + 2)).getX(), this->iWidth);
+	int bottom = Math::getMin((*(points + 2)).getY(), this->iHeight);
+
+	float width = right - left;
+	float height = bottom - top;
+
+	for(int i = left; i < right; i++){
+		Pixel x = Pixel::Interpolation(pixel[0], pixel[1], (i - left) / width);
+		Pixel y = Pixel::Interpolation(pixel[3], pixel[2], (i - left) / width);
+
+		for(int j = top; j < bottom; j++){
+			
+			Pixel xy = Pixel::Interpolation(x, y, (j - top) / height);
+			setPixelEx(i, j, xy);
+		}
+	}
+}
+
 void Raster::drawLine(float2 start, float2 end, Pixel startPixel, Pixel endPixel){
 	float offsetX = start.getX() - end.getX();
 	float offsetY = start.getY() - end.getY();	
@@ -130,6 +166,10 @@ void Raster::setPixel(unsigned x, unsigned y, Pixel pixel){
 		return;
 	}
 
+	this->pBuffer[y * this->iWidth + x] = pixel;
+}
+
+void Raster::setPixelEx(unsigned x, unsigned y, Pixel pixel){
 	this->pBuffer[y * this->iWidth + x] = pixel;
 }
 
