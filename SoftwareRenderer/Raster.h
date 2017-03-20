@@ -27,7 +27,7 @@ public:
 	void drawPoint(int x, int y, Pixel pixel, int size);
 	void drawRectangle(int x, int y, int width, int height);
 	void drawRectangle(int2* points, const Pixel* pixel);
-	void drawTriangle(int2 point0, int2 point1, int2 point2);
+	void drawTriangle(int2 point0, int2 point1, int2 point2, Pixel pixel0, Pixel pixel1, Pixel pixel2);
 
 	void drawArrays(DRAWMODE mode, const float2* points, int count);
 

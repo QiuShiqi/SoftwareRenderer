@@ -72,11 +72,11 @@ void Raster::drawRectangle(int2* points, const Pixel* pixel){
 	}
 }
 
-void Raster::drawTriangle(int2 point0, int2 point1, int2 point2){
+void Raster::drawTriangle(int2 point0, int2 point1, int2 point2, Pixel pixel0, Pixel pixel1, Pixel pixel2){
 	Edge edges[] = {
-		Edge(point0.getX(), point0.getY(), point1.getX(), point1.getY()),
-		Edge(point1.getX(), point1.getY(), point2.getX(), point2.getY()),
-		Edge(point2.getX(), point2.getY(), point0.getX(), point0.getY())
+		Edge(point0.getX(), point0.getY(), point1.getX(), point1.getY(), pixel0, pixel1),
+		Edge(point1.getX(), point1.getY(), point2.getX(), point2.getY(), pixel1, pixel2),
+		Edge(point2.getX(), point2.getY(), point0.getX(), point0.getY(), pixel2, pixel0)
 	};
 
 	// Find the longest edge
@@ -102,7 +102,7 @@ void Raster::drawTriangle(int2 point0, int2 point1, int2 point2){
 
 void Raster::drawLine(float2 start, float2 end, Pixel startPixel, Pixel endPixel){
 	float offsetX = start.getX() - end.getX();
-	float offsetY = start.getY() - end.getY();	
+	float offsetY = start.getY() - end.getY();
 
 	if(offsetX == 0 && offsetY == 0){	// 距离只有一个点
 		setPixel(start.getX(), start.getY(), startPixel);
@@ -202,8 +202,14 @@ void Raster::setPixelEx(unsigned x, unsigned y, Pixel pixel){
 }
 
 void Raster::drawSpan(Span& span){
+	float length = span.getEndX() - span.getStartX();
+
 	for(int x = span.getStartX(); x < span.getEndX(); x++){
-		this->setPixel(x, span.getY(), this->pixel);
+
+		float percent = (float)(x - span.getStartX()) / length;
+		Pixel pixel = Pixel::Interpolation(span.getPixelStart(), span.getPixelEnd(), percent);
+
+		this->setPixel(x, span.getY(), pixel);
 	}
 }
 
@@ -231,11 +237,14 @@ void Raster::drawEdge(Edge longEdge, Edge shortEdge){
 		int startX = longEdge.getStartX() + (int)(lengthLong * offsetLongX);
 		int endX = shortEdge.getStartX() + (int)(lengthShort * offsetShortX);
 
-		Span span(startX, endX, y);
+		Pixel longEdgePixel = Pixel::Interpolation(longEdge.getPixelStart(), longEdge.getPixelEnd(), lengthLong);
+		Pixel shoreEdgePixel = Pixel::Interpolation(shortEdge.getPixelStart(), shortEdge.getPixelEnd(), lengthShort);
+
+		Span span(startX, endX, y, longEdgePixel, shoreEdgePixel);
 		this->drawSpan(span);
 
-		lengthShort += stepShort;
 		lengthLong += stepLong;
+		lengthShort += stepShort;
 	}
 }
 
