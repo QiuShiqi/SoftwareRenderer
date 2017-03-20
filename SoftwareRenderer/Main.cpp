@@ -41,9 +41,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	HWND hwnd = CreateWindowEx(
 		NULL,
 		_T("Test"), _T("Test"),
-		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+		WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		256, 256,
+		480, 320,
 		NULL, NULL,
 		hInstance, NULL
 		);
@@ -66,7 +66,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	BITMAPINFO bmpInfor;
 	bmpInfor.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bmpInfor.bmiHeader.biWidth = width;
-	bmpInfor.bmiHeader.biHeight = height;
+	bmpInfor.bmiHeader.biHeight = -height;
 	bmpInfor.bmiHeader.biPlanes = 1;
 	bmpInfor.bmiHeader.biBitCount = 32;
 	bmpInfor.bmiHeader.biCompression = BI_RGB;
@@ -99,37 +99,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		raster.clear();
 
-		// 画点
-		/*
-		for(int i = 0; i < 100; i++){
-			raster.drawPoint(rand() % 256, rand() % 256, Pixel(255, 0, 0), 3);
-		}
-		*/
-
-		//raster.drawLine(float2(100, 100), float2(200, 200), Pixel(255, 0, 0), Pixel(0, 255, 0));	// 画线
-
 		float2 points[] = {
-			float2(11, 34),
-			float2(33, 66),
-			float2(1, 100),
-			float2(22, 88),
-			float2(100, 1)
+			float2(50, 50),
+			float2(200, 50),
+			float2(33, 88),
+			float2(159, 100)
 		};
 
-		raster.drawArrays(Raster::DM_LINE_STRIP, points, sizeof(points) / sizeof(points[0]));
+		float2 prev[2];
+		for(float t = 0; t < 1.0f; t += 0.01f){
+			float x = points[0].getX() * pow(1 - t, 3)
+				+ 3 * points[1].getX() * t * pow(1 - t, 2)
+				+ 3 * points[2].getX() * pow(t, 2) * (1 - t)
+				+ points[3].getX() * pow(t, 3);
 
-		// 画圆
-		float2 circlePoints[360];
-		float2 center(100, 100);
-		float radius = 80;
+			float y = points[0].getY() * pow(1 - t, 3)
+				+ 3 * points[1].getY() * t * pow(1 - t, 2)
+				+ 3 * points[2].getY() * pow(t, 2) * (1 - t)
+				+ points[3].getY() * pow(t, 3);
 
-		for(int i = 0; i < 360; i++){
-			float rad = Math::deg2rad(i);
-			circlePoints[i].setX(radius * cos(rad) + center.getX());
-			circlePoints[i].setY(radius * sin(rad) + center.getY());
+			if(t == 0){
+				prev[0] = float2(x, y);
+			}else{
+				prev[1] = float2(x, y);
+				raster.drawArrays(Raster::DM_LINES, prev, 2);
+				prev[0] = prev[1];
+			}
 		}
-
-		raster.drawArrays(Raster::DM_LINE_STRIP, circlePoints, sizeof(circlePoints) / sizeof(float2));
 
 		//拷贝数据
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());

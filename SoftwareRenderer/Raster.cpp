@@ -93,7 +93,7 @@ void Raster::drawArrays(DRAWMODE mode, const float2* points, int count){
 
 	case DM_LINES:
 		count = count / 2 * 2;
-		for(int i = 0; i < count; i++){
+		for(int i = 0; i < count; i += 2){
 			this->drawLine(points[i], points[i + 1], this->pixel, this->pixel);
 		}
 
