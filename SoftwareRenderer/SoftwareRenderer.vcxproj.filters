@@ -36,6 +36,12 @@
     <ClInclude Include="Edge.h">
       <Filter>头文件\Base</Filter>
     </ClInclude>
+    <ClInclude Include="Loader.h">
+      <Filter>头文件\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>头文件\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raster.cpp">
@@ -51,6 +57,12 @@
       <Filter>源文件\Base</Filter>
     </ClCompile>
     <ClCompile Include="Edge.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Loader.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
       <Filter>源文件\Base</Filter>
     </ClCompile>
   </ItemGroup>

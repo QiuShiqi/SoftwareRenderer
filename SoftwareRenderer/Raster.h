@@ -5,6 +5,7 @@
 #include "Math.h"
 #include "Span.h"
 #include "Edge.h"
+#include "Image.h"
 
 class Raster{
 public:
@@ -35,6 +36,8 @@ public:
 
 	Pixel* getBuffer();
 	int getBufferSize();
+
+	void drawImage(int x, int y, const Image* image);
 
 private:
 	inline void setPixel(unsigned x, unsigned y, Pixel pixel);

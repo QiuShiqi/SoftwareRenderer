@@ -1,6 +1,8 @@
 #include <Windows.h>
+#include <stdio.h> 
 #include <tchar.h>
 #include "Raster.h"
+#include "Loader.h"
 
 LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
@@ -83,6 +85,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// Raster
 	Raster raster(width, height, buffer);
+	Image* image = Loader::loadImage("Images\\1.jpg");
 
 	// Message loop
 	MSG msg = {0};
@@ -101,11 +104,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// Draw
 		raster.drawTriangle(int2(230, -80), int2(10, 280), int2(600, 280), Pixel(255, 0, 0), Pixel(0, 255, 0), Pixel(0, 0, 255));
+		raster.drawImage(100, 100, image);
 
 		// Copy data
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
 		BitBlt(hDC, 0, 0, width, height, hMem, 0, 0, SRCCOPY);
 	}
+
+	delete image;
+	image = nullptr;
 
 	return 0;
 }

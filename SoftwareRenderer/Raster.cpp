@@ -1,5 +1,6 @@
 #include "Raster.h"
 #include <string.h>
+#include <stdlib.h>
 
 Raster::Raster(int width, int height, void* buffer) : iWidth(width), iHeight(height), pixel(){
 	this->pBuffer = (Pixel*)buffer;
@@ -282,6 +283,7 @@ bool Raster::isInRect(int2 point){
 }
 
 void Raster::clear(){
+	int tmp = this->getBufferSize();
 	memset(this->pBuffer, 0, this->getBufferSize());
 }
 
@@ -290,5 +292,20 @@ Pixel* Raster::getBuffer(){
 }
 
 int Raster::getBufferSize(){
-	return (this->iWidth * this->iHeight * sizeof(Pixel));
+	return (this->iWidth * this->iHeight * sizeof(Pixel));	// sizeof(Pixel) need 4 byte
+}
+
+void Raster::drawImage(int x, int y, const Image* image){
+	int left = Math::getMax(x, 0);
+	int top = Math::getMax(y, 0);
+
+	int right = Math::getMin(x + image->getWidth(), this->iWidth);
+	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
+
+	for(int i = left; i < right; i++){
+		for(int j = top; j < bottom; j++){
+			Pixel pixel = image->getPixelAt(x - left, y - top);
+			setPixelEx(i, j, pixel);
+		}
+	}
 }

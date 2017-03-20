@@ -4,6 +4,10 @@ Pixel::Pixel(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 
 }
 
+Pixel::Pixel(uint pixel){
+	this->uiColor = pixel;
+}
+
 Pixel Pixel::Interpolation(Pixel start, Pixel end, float percentage){
 	Pixel pixel;
 
