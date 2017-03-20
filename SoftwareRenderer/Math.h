@@ -1,13 +1,16 @@
 #ifndef _Math_H_
 #define _Math_H_
 
+#include <cmath>
+
 template<class T>
 class Vector2{
 private:
 	T tX, tY;
 
 public:
-	Vector2::Vector2(T x, T y) : tX(x), tY(y){
+
+	Vector2::Vector2(T x = 0, T y = 0) : tX(x), tY(y){
 
 	}
 
@@ -22,11 +25,19 @@ public:
 	T getY(){
 		return this->tY;
 	}
+
+	void setX(T x){
+		this->tX = x;
+	}
+
+	void setY(T y){
+		this->tY = y;
+	}
 };
 
 typedef Vector2<float> float2;
 
-class Base{
+class Math{
 public:
 
 	template<class T>
@@ -42,6 +53,11 @@ public:
 	template<class T>
 	static T getAbs(T a){
 		return a > 0 ? a : -a;
+	}
+
+	template<class T>
+	static float deg2rad(T degree){
+		return 0.01745329251994329 * degree;
 	}
 
 };

@@ -41,7 +41,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	HWND hwnd = CreateWindowEx(
 		NULL,
 		_T("Test"), _T("Test"),
-		WS_POPUPWINDOW/*WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS*/,
+		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		256, 256,
 		NULL, NULL,
@@ -106,8 +106,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		*/
 
-		raster.drawLine(float2(-11, 111), float2(233, 222), Pixel(255, 0, 0));	// 画线
+		//raster.drawLine(float2(100, 100), float2(200, 200), Pixel(255, 0, 0), Pixel(0, 255, 0));	// 画线
 
+		float2 points[] = {
+			float2(11, 34),
+			float2(33, 66),
+			float2(1, 100),
+			float2(22, 88),
+			float2(100, 1)
+		};
+
+		raster.drawArrays(Raster::DM_LINE_STRIP, points, sizeof(points) / sizeof(points[0]));
+
+		// 画圆
+		float2 circlePoints[360];
+		float2 center(100, 100);
+		float radius = 80;
+
+		for(int i = 0; i < 360; i++){
+			float rad = Math::deg2rad(i);
+			circlePoints[i].setX(radius * cos(rad) + center.getX());
+			circlePoints[i].setY(radius * sin(rad) + center.getY());
+		}
+
+		raster.drawArrays(Raster::DM_LINE_STRIP, circlePoints, sizeof(circlePoints) / sizeof(float2));
+
+		//拷贝数据
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
 		BitBlt(hDC, 0, 0, width, height, hMem, 0, 0, SRCCOPY);
 	}
