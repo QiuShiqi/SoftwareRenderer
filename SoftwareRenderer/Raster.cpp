@@ -314,6 +314,22 @@ void Raster::drawImage(int x, int y, const Image* image){
 	}
 }
 
+void Raster::drawImage(int x, int y, int startX, int startY, int width, int height, const Image* image){
+
+	int left = Math::getMax(x, 0);
+	int top = Math::getMax(y, 0);
+
+	int right = Math::getMin(x + width, this->iWidth);
+	int bottom = Math::getMin(y + height, this->iHeight);
+
+	for(int i = left; i < right; i++){
+		for(int j = top; j < bottom; j++){
+			Pixel pixel = image->getPixelAt(i - left + startX, j - top + startY);
+			setPixelEx(i, j, pixel);
+		}
+	}
+}
+
 void Raster::drawImageWithColorKey(int x, int y, const Image* image, Pixel key){
 	int left = Math::getMax(x, 0);
 	int top = Math::getMax(y, 0);

@@ -4,6 +4,13 @@
 #include "Raster.h"
 #include "Loader.h"
 
+void recover(void* p){
+	if(p != nullptr){
+		delete p;
+		p = nullptr;
+	}
+}
+
 LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam){
 	switch(message){
 	case WM_SIZE:
@@ -87,6 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Raster raster(width, height, buffer);
 	Image* image = Loader::loadImage("Images\\bg.png");
 	Image* imageAlpha = Loader::loadImage("Images\\grass.png");
+	Image* imageClip = Loader::loadImage("Images\\scale.jpg");
 
 	// Message loop
 	MSG msg = {0};
@@ -108,14 +116,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		raster.drawImageAlphaTest(10, 100, imageAlpha, 100);
 		raster.drawImageAlphaBlend(125, 100, imageAlpha, 0.8f);
 		raster.drawImageAlpha(10, 300, imageAlpha, 0.5f);
+		raster.drawImage(200, 300, 50, 50, 30, 50, imageClip);
 
 		// Copy data
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
 		BitBlt(hDC, 0, 0, width, height, hMem, 0, 0, SRCCOPY);
 	}
 
-	delete image;
-	image = nullptr;
+	// recover
+	recover(imageClip);
+	recover(imageAlpha);
+	recover(image);
 
 	return 0;
 }

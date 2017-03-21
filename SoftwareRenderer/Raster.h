@@ -42,6 +42,8 @@ public:
 
 	// Image
 	void drawImage(int x, int y, const Image* image);
+	void drawImage(int x, int y, int startX, int startY, int width, int height, const Image* image);
+
 	void drawImageWithColorKey(int x, int y, const Image* image, Pixel key);
 	void drawImageAlphaTest(int x, int y, const Image* image, byte alpha);
 	void drawImageAlphaBlend(int x, int y, const Image* image, float alpha = 1.0f);
