@@ -49,6 +49,8 @@ public:
 	void drawImageAlphaBlend(int x, int y, const Image* image, float alpha = 1.0f);
 	void drawImageAlpha(int x, int y, const Image* image, float alpha);
 
+	void drawImageScale(int x, int y, int width, int height, const Image* image);
+
 private:
 	inline void setPixel(unsigned x, unsigned y, Pixel pixel);
 	inline void setPixelEx(unsigned x, unsigned y, Pixel pixel);	// No border check
@@ -62,6 +64,7 @@ private:
 	void drawEdge(Edge longEdge, Edge shortEdge);
 
 	bool isInRect(int2 point);
+
 };
 
 #endif

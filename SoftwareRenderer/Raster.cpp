@@ -401,3 +401,18 @@ void Raster::drawImageAlpha(int x, int y, const Image* image, float alpha){
 		}
 	}
 }
+
+void Raster::drawImageScale(int x, int y, int width, int height, const Image* image){
+	float scaleX = (float)image->getWidth() / (float)width;
+	float scaleY = (float)image->getHeight() / (float)height;
+
+	for(int i = x; i < x + width; i++){
+		for(int j = y; j < y + height; j++){
+			float sizeX = (i - x) * scaleX;
+			float sizeY = (j - y) * scaleY;
+
+			Pixel pixel = image->getPixelAt(sizeX, sizeY);
+			setPixelEx(i, j, pixel);
+		}
+	}
+}

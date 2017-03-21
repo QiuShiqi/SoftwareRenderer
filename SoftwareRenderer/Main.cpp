@@ -93,8 +93,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Raster
 	Raster raster(width, height, buffer);
 	Image* image = Loader::loadImage("Images\\bg.png");
-	Image* imageAlpha = Loader::loadImage("Images\\grass.png");
-	Image* imageClip = Loader::loadImage("Images\\scale.jpg");
+	Image* imageScale = Loader::loadImage("Images\\scale.jpg");
 
 	// Message loop
 	MSG msg = {0};
@@ -113,10 +112,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// Draw
 		raster.drawImage(0, 0, image);
-		raster.drawImageAlphaTest(10, 100, imageAlpha, 100);
-		raster.drawImageAlphaBlend(125, 100, imageAlpha, 0.8f);
-		raster.drawImageAlpha(10, 300, imageAlpha, 0.5f);
-		raster.drawImage(200, 300, 50, 50, 30, 50, imageClip);
+		raster.drawImageScale(100, 100, 250, 250, imageScale);
 
 		// Copy data
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
@@ -124,8 +120,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	// recover
-	recover(imageClip);
-	recover(imageAlpha);
+	recover(imageScale);
 	recover(image);
 
 	return 0;
