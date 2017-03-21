@@ -4,11 +4,12 @@
 typedef unsigned int uint;
 
 class Pixel{
-public:
+	friend bool operator!=(const Pixel& left,const Pixel& right);
+private:
 	union{
 		struct  
 		{
-			unsigned char cB, cG, cR, cA;	// Under the Windows system, R and B is opposite
+			unsigned char ucB, ucG, ucR, ucA;	// Under the Windows system, R and B is opposite
 		};
 		uint uiColor;
 	};
@@ -18,6 +19,11 @@ public:
 	Pixel(uint pixel);
 
 	static Pixel Interpolation(Pixel start, Pixel end, float percentage);	// Interpolation calculation
+	
+	unsigned char getR() const;
+	unsigned char getG() const;
+	unsigned char getB() const;
+	unsigned char getA() const;
 };
 
 #endif

@@ -1,6 +1,10 @@
 #include "Pixel.h"
 
-Pixel::Pixel(unsigned char r, unsigned char g, unsigned char b, unsigned char a) : cR(r), cG(g), cB(b), cA(a){
+bool operator!=(const Pixel& left,const Pixel& right){
+	return left.getR() != right.getR() || left.getG() != right.getG() || left.getB() != right.getB() || left.getA() != right.getA();
+}
+
+Pixel::Pixel(unsigned char r, unsigned char g, unsigned char b, unsigned char a) : ucR(r), ucG(g), ucB(b), ucA(a){
 
 }
 
@@ -11,10 +15,26 @@ Pixel::Pixel(uint pixel){
 Pixel Pixel::Interpolation(Pixel start, Pixel end, float percentage){
 	Pixel pixel;
 
-	pixel.cR = (unsigned char)(start.cR + percentage * (end.cR - start.cR));
-	pixel.cG = (unsigned char)(start.cG + percentage * (end.cG - start.cG));
-	pixel.cB = (unsigned char)(start.cB + percentage * (end.cB - start.cB));
-	pixel.cA = (unsigned char)(start.cA + percentage * (end.cA - start.cA));
+	pixel.ucR = (unsigned char)(start.ucR + percentage * (end.ucR - start.ucR));
+	pixel.ucG = (unsigned char)(start.ucG + percentage * (end.ucG - start.ucG));
+	pixel.ucB = (unsigned char)(start.ucB + percentage * (end.ucB - start.ucB));
+	pixel.ucA = (unsigned char)(start.ucA + percentage * (end.ucA - start.ucA));
 
 	return pixel;
+}
+
+unsigned char Pixel::getR() const{
+	return this->ucB;
+}
+
+unsigned char Pixel::getG() const{
+	return this->ucG;
+}
+
+unsigned char Pixel::getB() const{
+	return this->ucR;
+}
+
+unsigned char Pixel::getA() const{
+	return this->ucA;
 }

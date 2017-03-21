@@ -210,6 +210,10 @@ void Raster::setPixelEx(unsigned x, unsigned y, Pixel pixel){
 	this->pBuffer[y * this->iWidth + x] = pixel;
 }
 
+Pixel Raster::getPixel(unsigned x, unsigned y){
+	return Pixel(this->pBuffer[y * this->iWidth + x]);
+}
+
 void Raster::drawSpan(Span& span){
 	float length = span.getEndX() - span.getStartX();
 	float step = 1.0f / length;
@@ -304,7 +308,79 @@ void Raster::drawImage(int x, int y, const Image* image){
 
 	for(int i = left; i < right; i++){
 		for(int j = top; j < bottom; j++){
-			Pixel pixel = image->getPixelAt(x - left, y - top);
+			Pixel pixel = image->getPixelAt(i - left, j - top);
+			setPixelEx(i, j, pixel);
+		}
+	}
+}
+
+void Raster::drawImageWithColorKey(int x, int y, const Image* image, Pixel key){
+	int left = Math::getMax(x, 0);
+	int top = Math::getMax(y, 0);
+
+	int right = Math::getMin(x + image->getWidth(), this->iWidth);
+	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
+
+	for(int i = left; i < right; i++){
+		for(int j = top; j < bottom; j++){
+			Pixel pixel = image->getPixelAt(i - left, j - top);
+			
+			if(pixel != key){
+				setPixelEx(i, j, pixel);
+			}
+		}
+	}
+}
+
+void Raster::drawImageAlphaTest(int x, int y, const Image* image, byte alpha){
+	int left = Math::getMax(x, 0);
+	int top = Math::getMax(y, 0);
+
+	int right = Math::getMin(x + image->getWidth(), this->iWidth);
+	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
+
+	for(int i = left; i < right; i++){
+		for(int j = top; j < bottom; j++){
+			Pixel pixel = image->getPixelAt(i - left, j - top);
+
+			if(alpha < pixel.getA()){
+				setPixelEx(i, j, pixel);
+			}
+		}
+	}
+}
+
+void Raster::drawImageAlphaBlend(int x, int y, const Image* image, float alpha){
+	int left = Math::getMax(x, 0);
+	int top = Math::getMax(y, 0);
+
+	int right = Math::getMin(x + image->getWidth(), this->iWidth);
+	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
+
+	for(int i = left; i < right; i++){
+		for(int j = top; j < bottom; j++){
+			Pixel imagePixel = image->getPixelAt(i - left, j - top);
+			Pixel backgroundPixel = this->getPixel(i, j);
+
+			Pixel pixel = Pixel::Interpolation(backgroundPixel, imagePixel, imagePixel.getA() / 255.0f * alpha);
+			setPixelEx(i, j, pixel);
+		}
+	}
+}
+
+void Raster::drawImageAlpha(int x, int y, const Image* image, float alpha){
+	int left = Math::getMax(x, 0);
+	int top = Math::getMax(y, 0);
+
+	int right = Math::getMin(x + image->getWidth(), this->iWidth);
+	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
+
+	for(int i = left; i < right; i++){
+		for(int j = top; j < bottom; j++){
+			Pixel imagePixel = image->getPixelAt(i - left, j - top);
+			Pixel backgroundPixel = this->getPixel(i, j);
+
+			Pixel pixel = Pixel::Interpolation(backgroundPixel, imagePixel, alpha);
 			setPixelEx(i, j, pixel);
 		}
 	}

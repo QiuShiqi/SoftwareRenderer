@@ -7,6 +7,8 @@
 #include "Edge.h"
 #include "Image.h"
 
+typedef unsigned char byte;
+
 class Raster{
 public:
 	enum DRAWMODE{
@@ -32,16 +34,23 @@ public:
 
 	void drawArrays(DRAWMODE mode, const float2* points, int count);
 
+	// Buffer
 	void clear();
 
 	Pixel* getBuffer();
 	int getBufferSize();
 
+	// Image
 	void drawImage(int x, int y, const Image* image);
+	void drawImageWithColorKey(int x, int y, const Image* image, Pixel key);
+	void drawImageAlphaTest(int x, int y, const Image* image, byte alpha);
+	void drawImageAlphaBlend(int x, int y, const Image* image, float alpha = 1.0f);
+	void drawImageAlpha(int x, int y, const Image* image, float alpha);
 
 private:
 	inline void setPixel(unsigned x, unsigned y, Pixel pixel);
 	inline void setPixelEx(unsigned x, unsigned y, Pixel pixel);	// No border check
+	inline Pixel getPixel(unsigned x, unsigned y);
 
 	void drawLine(float2 start, float2 end, Pixel startPixel, Pixel endPixel);
 	void drawPoints(float2 dot, Pixel pixel);

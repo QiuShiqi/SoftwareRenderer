@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		_T("Test"), _T("Test"),
 		WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		480, 320,
+		800, 600,
 		NULL, NULL,
 		hInstance, NULL
 		);
@@ -85,7 +85,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// Raster
 	Raster raster(width, height, buffer);
-	Image* image = Loader::loadImage("Images\\1.jpg");
+	Image* image = Loader::loadImage("Images\\bg.png");
+	Image* imageAlpha = Loader::loadImage("Images\\grass.png");
 
 	// Message loop
 	MSG msg = {0};
@@ -103,8 +104,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		raster.clear();
 
 		// Draw
-		raster.drawTriangle(int2(230, -80), int2(10, 280), int2(600, 280), Pixel(255, 0, 0), Pixel(0, 255, 0), Pixel(0, 0, 255));
-		raster.drawImage(100, 100, image);
+		raster.drawImage(0, 0, image);
+		raster.drawImageAlphaTest(10, 100, imageAlpha, 100);
+		raster.drawImageAlphaBlend(125, 100, imageAlpha, 0.8f);
+		raster.drawImageAlpha(10, 300, imageAlpha, 0.5f);
 
 		// Copy data
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
