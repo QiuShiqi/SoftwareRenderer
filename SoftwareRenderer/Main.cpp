@@ -29,7 +29,7 @@ LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
-	
+
 	// Register window
 	WNDCLASSEX wndClass = {0};
 	wndClass.cbSize = sizeof(WNDCLASSEX);
@@ -95,6 +95,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Image* image = Loader::loadImage("Images\\bg.png");
 	Image* imageUV = Loader::loadImage("Images\\scale.jpg");
 
+	Vertex vertex0[] = {
+		Vertex(int2(10, 10), Pixel(), float2(0.0f, 0.0f)),
+		Vertex(int2(10, 210), Pixel(), float2(0.0f, 1.0f)),
+		Vertex(int2(210, 210), Pixel(), float2(1.0f, 1.0f))
+	};
+
+	Vertex vertex1[] = {
+		Vertex(int2(10, 10), Pixel(), float2(0.0f, 0.0f)),
+		Vertex(int2(210, 210), Pixel(), float2(1.0f, 1.0f)),
+		Vertex(int2(210, 10), Pixel(), float2(1.0f, 0.0f))
+	};
+
+	StateMachine stateMachine;
+	stateMachine.vertexPointer(StateMachine::PT_POSITION, 2, StateMachine::DT_FLOAT, sizeof(Vertex), &(vertex0[0].point));
+	stateMachine.vertexPointer(StateMachine::PT_COLOR, 4, StateMachine::DT_BYTE, sizeof(Vertex), &(vertex0[0].pixel));
+	stateMachine.vertexPointer(StateMachine::PT_UV, 4, StateMachine::DT_FLOAT, sizeof(Vertex), &(vertex0[0].uv));
+
 	// Message loop
 	MSG msg = {0};
 
@@ -113,20 +130,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// Draw
 		raster.drawImage(0, 0, image);
 
-		Vertex vertex0(
-			int2(10, 10), int2(10, 110), int2(110, 110),
-			Pixel(), Pixel(), Pixel(),
-			float2(0.0f, 0.0f), float2(0.0f, 1.0f), float2(1.0f, 1.0f)
-			);
-		
-		Vertex vertex1(
-			int2(10, 10), int2(110, 110), int2(110, 10),
-			Pixel(), Pixel(), Pixel(),
-			float2(0.0f, 0.0f), float2(1.0f, 1.0f), float2(1.0f, 0.0f)
-			);
-		
-		raster.drawTriangle(vertex0, imageUV);
-		raster.drawTriangle(vertex1, imageUV);
+		raster.drawTriangle(vertex0[0], vertex0[1], vertex0[2], imageUV);
+		raster.drawTriangle(vertex1[0], vertex1[1], vertex1[2], imageUV);
+
+		//raster.drawArrays(Raster::DM_TRIANGES, 0, 3);
 
 		// Copy data
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());

@@ -28,7 +28,7 @@ Pixel Image::getPixelUV(float u, float v){
 	float x = u * this->iWidth;
 	float y = v * this->iHeight;
 
-	return this->getPixelAt(x, y);
+	return this->getPixelAt((unsigned)(x) % this->iWidth, (unsigned)(y) % this->iHeight);
 }
 
 int Image::getWidth() const{

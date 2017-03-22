@@ -19,6 +19,12 @@
     <Filter Include="源文件\Base">
       <UniqueIdentifier>{fd53d269-8f0a-4f1f-bb55-abd71c70e017}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Module">
+      <UniqueIdentifier>{29fd5692-efea-4953-a372-255411cab0d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Module">
+      <UniqueIdentifier>{7e85954c-4ee2-49e9-930b-8246516f308e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Raster.h">
@@ -33,9 +39,6 @@
     <ClInclude Include="Edge.h">
       <Filter>头文件\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Loader.h">
-      <Filter>头文件\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Image.h">
       <Filter>头文件\Base</Filter>
     </ClInclude>
@@ -44,6 +47,12 @@
     </ClInclude>
     <ClInclude Include="Pixel.h">
       <Filter>头文件\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Loader.h">
+      <Filter>头文件\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>头文件\Module</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -59,9 +68,6 @@
     <ClCompile Include="Edge.cpp">
       <Filter>源文件\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Loader.cpp">
-      <Filter>源文件\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Image.cpp">
       <Filter>源文件\Base</Filter>
     </ClCompile>
@@ -70,6 +76,12 @@
     </ClCompile>
     <ClCompile Include="Pixel.cpp">
       <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>源文件\Module</Filter>
+    </ClCompile>
+    <ClCompile Include="Loader.cpp">
+      <Filter>源文件\Module</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

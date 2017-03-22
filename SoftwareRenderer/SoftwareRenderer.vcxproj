@@ -87,6 +87,7 @@
     <ClInclude Include="Pixel.h" />
     <ClInclude Include="Raster.h" />
     <ClInclude Include="Span.h" />
+    <ClInclude Include="StateMachine.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +98,7 @@
     <ClCompile Include="Pixel.cpp" />
     <ClCompile Include="Raster.cpp" />
     <ClCompile Include="Span.cpp" />
+    <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

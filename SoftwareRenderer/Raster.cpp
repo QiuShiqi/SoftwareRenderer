@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-Raster::Raster(int width, int height, void* buffer) : iWidth(width), iHeight(height), pixel(){
+Raster::Raster(int width, int height, void* buffer) : iWidth(width), iHeight(height), pixel() {
 	this->pBuffer = (uint*)buffer;
 }
 
@@ -10,16 +10,16 @@ Raster::~Raster(){
 
 }
 
-void Raster::drawTriangle(const Vertex& vertex, Image* image){
+void Raster::drawTriangle(const Vertex& vertex0, const Vertex& vertex1, const Vertex& vertex2, Image* image){
 
-	if(!(this->isInRect(vertex.point0)) && !(this->isInRect(vertex.point1)) && !(this->isInRect(vertex.point2))){
+	if(!(this->isInRect(vertex0.point)) && !(this->isInRect(vertex1.point)) && !(this->isInRect(vertex2.point))){
 		return;
 	}
 
 	Edge edges[3] = {
-		Edge(vertex.point0.getX(), vertex.point0.getY(), vertex.point1.getX(), vertex.point1.getY(), vertex.pixel0, vertex.pixel1, vertex.uv0, vertex.uv1),
-		Edge(vertex.point1.getX(), vertex.point1.getY(), vertex.point2.getX(), vertex.point2.getY(), vertex.pixel1, vertex.pixel2, vertex.uv1, vertex.uv2),
-		Edge(vertex.point2.getX(), vertex.point2.getY(), vertex.point0.getX(), vertex.point0.getY(), vertex.pixel2, vertex.pixel0, vertex.uv2, vertex.uv0)
+		Edge(vertex0.point.getX(), vertex0.point.getY(), vertex1.point.getX(), vertex1.point.getY(), vertex0.pixel, vertex1.pixel, vertex0.uv, vertex1.uv),
+		Edge(vertex1.point.getX(), vertex1.point.getY(), vertex2.point.getX(), vertex2.point.getY(), vertex1.pixel, vertex2.pixel, vertex1.uv, vertex2.uv),
+		Edge(vertex2.point.getX(), vertex2.point.getY(), vertex0.point.getX(), vertex0.point.getY(), vertex2.pixel, vertex0.pixel, vertex2.uv, vertex0.uv)
 	};
 
 	// Find the longest edge
@@ -62,6 +62,10 @@ void Raster::drawImage(int x, int y, const Image* image){
 
 }
 
+void Raster::drawArrays(DRAWMODE type, int start, int count){
+
+}
+
 void Raster::setPixel(unsigned x, unsigned y, Pixel pixel){
 
 	if(x >= this->iWidth || y >= this->iHeight){
@@ -92,13 +96,13 @@ void Raster::drawSpan(Span& span, Image* image){
 
 	for(int x = startX; x < endX; x++){
 
-		Pixel pixelColor = Pixel::Interpolation(span.getPixelStart(), span.getPixelEnd(), percent);
+		//Pixel pixelColor = Pixel::Interpolation(span.getPixelStart(), span.getPixelEnd(), percent);
 
 		float2 uv = Pixel::Interpolation(span.getStartUV(), span.getEndUV(), percent);
 		Pixel pixelUV = image->getPixelUV(uv.getX(), uv.getY());
 
-		Pixel pixel = pixelColor + pixelUV;
-		this->setPixel(x, span.getY(), pixel);
+		//Pixel pixel = pixelColor + pixelUV;
+		this->setPixel(x, span.getY(), pixelUV);
 
 		percent += step;
 	}
