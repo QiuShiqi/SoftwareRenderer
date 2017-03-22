@@ -3,86 +3,23 @@
 #include <stdlib.h>
 
 Raster::Raster(int width, int height, void* buffer) : iWidth(width), iHeight(height), pixel(){
-	this->pBuffer = (Pixel*)buffer;
+	this->pBuffer = (uint*)buffer;
 }
 
 Raster::~Raster(){
 
 }
 
-void Raster::drawPoint(int x, int y, Pixel pixel, int size){
-	switch(size){
-	case 2:
-		this->setPixel(x, y, pixel);
-		this->setPixel(x+1, y, pixel);
-		this->setPixel(x, y+1, pixel);
-		this->setPixel(x+1, y+1, pixel);
-		break;
+void Raster::drawTriangle(const Vertex& vertex, Image* image){
 
-	case 3:
-		this->setPixel(x-1, y-1, pixel);
-		this->setPixel(x, y-1, pixel);
-		this->setPixel(x+1, y-1, pixel);
-		this->setPixel(x-1, y, pixel);
-		this->setPixel(x, y, pixel);
-		this->setPixel(x+1, y, pixel);
-		this->setPixel(x-1, y+1, pixel);
-		this->setPixel(x, y+1, pixel);
-		this->setPixel(x+1, y+1, pixel);
-		break;
-
-	default:
-		this->setPixel(x, y, pixel);
-	}
-
-}
-
-void Raster::drawRectangle(int x, int y, int width, int height){
-	int left = Math::getMax(x, 0);
-	int top = Math::getMax(y, 0);
-
-	int right = Math::getMin(x + width, this->iWidth);
-	int bottom = Math::getMin(y + height, this->iHeight);
-
-	for(int i = left; i < right; i++){
-		for(int j = top; j < bottom; j++){
-			setPixelEx(i, j, this->pixel);
-		}
-	}
-}
-
-void Raster::drawRectangle(int2* points, const Pixel* pixel){
-	int left = Math::getMax((*(points)).getX(), 0);
-	int top = Math::getMax((*(points)).getY(), 0);
-
-	int right = Math::getMin((*(points + 2)).getX(), this->iWidth);
-	int bottom = Math::getMin((*(points + 2)).getY(), this->iHeight);
-
-	float width = right - left;
-	float height = bottom - top;
-
-	for(int i = left; i < right; i++){
-		Pixel x = Pixel::Interpolation(pixel[0], pixel[1], (i - left) / width);
-		Pixel y = Pixel::Interpolation(pixel[3], pixel[2], (i - left) / width);
-
-		for(int j = top; j < bottom; j++){
-			
-			Pixel xy = Pixel::Interpolation(x, y, (j - top) / height);
-			setPixelEx(i, j, xy);
-		}
-	}
-}
-
-void Raster::drawTriangle(int2 point0, int2 point1, int2 point2, Pixel pixel0, Pixel pixel1, Pixel pixel2){
-
-	if(!(this->isInRect(point0)) && !(this->isInRect(point1)) && !(this->isInRect(point2))){
+	if(!(this->isInRect(vertex.point0)) && !(this->isInRect(vertex.point1)) && !(this->isInRect(vertex.point2))){
 		return;
 	}
 
-	Edge edges[] = {
-		Edge(point0.getX(), point0.getY(), point1.getX(), point1.getY(), pixel0, pixel1),
-		Edge(point1.getX(), point1.getY(), point2.getX(), point2.getY(), pixel1, pixel2),
-		Edge(point2.getX(), point2.getY(), point0.getX(), point0.getY(), pixel2, pixel0)
+	Edge edges[3] = {
+		Edge(vertex.point0.getX(), vertex.point0.getY(), vertex.point1.getX(), vertex.point1.getY(), vertex.pixel0, vertex.pixel1, vertex.uv0, vertex.uv1),
+		Edge(vertex.point1.getX(), vertex.point1.getY(), vertex.point2.getX(), vertex.point2.getY(), vertex.pixel1, vertex.pixel2, vertex.uv1, vertex.uv2),
+		Edge(vertex.point2.getX(), vertex.point2.getY(), vertex.point0.getX(), vertex.point0.getY(), vertex.pixel2, vertex.pixel0, vertex.uv2, vertex.uv0)
 	};
 
 	// Find the longest edge
@@ -103,98 +40,26 @@ void Raster::drawTriangle(int2 point0, int2 point1, int2 point2, Pixel pixel0, P
 	int short2 = (index + 2) % 3;
 
 	// Begin draw
-	this->drawEdge(edges[index], edges[short1]);
-	this->drawEdge(edges[index], edges[short2]);
+	this->drawEdge(edges[index], edges[short1], image);
+	this->drawEdge(edges[index], edges[short2], image);
 
 }
 
+void Raster::drawImage(int x, int y, const Image* image){
 
-void Raster::drawLine(float2 start, float2 end, Pixel startPixel, Pixel endPixel){
-	float offsetX = start.getX() - end.getX();
-	float offsetY = start.getY() - end.getY();
+	int left = Math::getMax(x, 0);
+	int top = Math::getMax(y, 0);
 
-	if(offsetX == 0 && offsetY == 0){	// 距离只有一个点
-		setPixel(start.getX(), start.getY(), startPixel);
-	}
+	int right = Math::getMin(x + image->getWidth(), this->iWidth);
+	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
 
-	if(Math::getAbs(offsetX) > Math::getAbs(offsetY)){
-		float maxX = Math::getMax(start.getX(), end.getX());
-		float minX = Math::getMin(start.getX(), end.getX());
-
-		float slope = offsetY / offsetX;	// 斜率
-		float length = maxX - minX;	// 计算长度
-
-		for(float x = minX; x <= maxX; x += 1.0f){
-			float y = start.getY() + (x - start.getX()) * slope;
-
-			//颜色插值计算
-			float percent = (x - minX) / length;
-			Pixel pixel = Pixel::Interpolation(startPixel, endPixel, percent);
-
-			this->setPixel(x, y, pixel);
-		}
-
-	}else{
-		float maxY = Math::getMax(start.getY(), end.getY());
-		float minY = Math::getMin(start.getY(), end.getY());
-
-		float slope = offsetX / offsetY;	// 斜率
-		float length = maxY - minY;	// 计算长度
-
-		for(float y = minY; y <= maxY; y += 1.0f){
-			float x = start.getX() + (y - start.getY()) * slope;
-
-			//颜色插值计算
-			float percent = (y - minY) / length;
-			Pixel pixel = Pixel::Interpolation(startPixel, endPixel, percent);
-
-			this->setPixel(x, y, pixel);
+	for(int i = left; i < right; i++){
+		for(int j = top; j < bottom; j++){
+			Pixel pixel = image->getPixelAt(i - left, j - top);
+			setPixelEx(i, j, pixel);
 		}
 	}
 
-}
-
-void Raster::drawArrays(DRAWMODE mode, const float2* points, int count){
-
-	switch(mode){
-	case DM_POINTS:
-		for(int i = 0; i < count; i++){
-			this->drawPoints(points[i], this->pixel);	// 颜色默认值
-		}
-
-		break;
-
-	case DM_LINES:
-		count = count / 2 * 2;
-		for(int i = 0; i < count; i += 2){
-			this->drawLine(points[i], points[i + 1], this->pixel, this->pixel);
-		}
-
-		break;
-
-	case DM_LINE_LOOP:
-		this->drawLine(points[0], points[1], this->pixel, this->pixel);
-
-		for(int i = 2; i < count; i++){
-			this->drawLine(points[i - 1], points[i], this->pixel, this->pixel);
-		}
-
-		this->drawLine(points[0], points[count - 1], this->pixel, this->pixel);
-		break;
-
-	case DM_LINE_STRIP:
-		this->drawLine(points[0], points[1], this->pixel, this->pixel);
-
-		for(int i = 2; i < count; i++){
-			this->drawLine(points[i - 1], points[i], this->pixel, this->pixel);
-		}
-
-		break;
-	}
-}
-
-void Raster::drawPoints(float2 dot, Pixel pixel){
-	this->drawPoint(dot.getX(), dot.getY(), pixel, 1);
 }
 
 void Raster::setPixel(unsigned x, unsigned y, Pixel pixel){
@@ -203,18 +68,19 @@ void Raster::setPixel(unsigned x, unsigned y, Pixel pixel){
 		return;
 	}
 
-	this->pBuffer[y * this->iWidth + x] = pixel;
+	this->pBuffer[y * this->iWidth + x] = pixel.getColor();
 }
 
 void Raster::setPixelEx(unsigned x, unsigned y, Pixel pixel){
-	this->pBuffer[y * this->iWidth + x] = pixel;
+	this->pBuffer[y * this->iWidth + x] = pixel.getColor();
 }
 
 Pixel Raster::getPixel(unsigned x, unsigned y){
 	return Pixel(this->pBuffer[y * this->iWidth + x]);
 }
 
-void Raster::drawSpan(Span& span){
+void Raster::drawSpan(Span& span, Image* image){
+
 	float length = span.getEndX() - span.getStartX();
 	float step = 1.0f / length;
 	float percent = 0;
@@ -226,14 +92,20 @@ void Raster::drawSpan(Span& span){
 
 	for(int x = startX; x < endX; x++){
 
-		Pixel pixel = Pixel::Interpolation(span.getPixelStart(), span.getPixelEnd(), percent);
-		this->setPixelEx(x, span.getY(), pixel);
+		Pixel pixelColor = Pixel::Interpolation(span.getPixelStart(), span.getPixelEnd(), percent);
+
+		float2 uv = Pixel::Interpolation(span.getStartUV(), span.getEndUV(), percent);
+		Pixel pixelUV = image->getPixelUV(uv.getX(), uv.getY());
+
+		Pixel pixel = pixelColor + pixelUV;
+		this->setPixel(x, span.getY(), pixel);
 
 		percent += step;
 	}
+
 }
 
-void Raster::drawEdge(Edge longEdge, Edge shortEdge){
+void Raster::drawEdge(Edge longEdge, Edge shortEdge, Image* image){
 
 	float offsetLongY = longEdge.getEndY() - longEdge.getStartY();
 	if(offsetLongY == 0){
@@ -270,12 +142,16 @@ void Raster::drawEdge(Edge longEdge, Edge shortEdge){
 		Pixel longEdgePixel = Pixel::Interpolation(longEdge.getPixelStart(), longEdge.getPixelEnd(), lengthLong);
 		Pixel shoreEdgePixel = Pixel::Interpolation(shortEdge.getPixelStart(), shortEdge.getPixelEnd(), lengthShort);
 
-		Span span(startX, endX, y, longEdgePixel, shoreEdgePixel);
-		this->drawSpan(span);
+		float2 startUV = Pixel::Interpolation(longEdge.getUVStart(), longEdge.getUVEnd(), lengthLong);
+		float2 endUV = Pixel::Interpolation(shortEdge.getUVStart(), shortEdge.getUVEnd(), lengthShort);
+
+		Span span(startX, endX, y, longEdgePixel, shoreEdgePixel, startUV, endUV);
+		this->drawSpan(span, image);
 
 		lengthLong += stepLong;
 		lengthShort += stepShort;
 	}
+
 }
 
 bool Raster::isInRect(int2 point){
@@ -291,128 +167,10 @@ void Raster::clear(){
 	memset(this->pBuffer, 0, this->getBufferSize());
 }
 
-Pixel* Raster::getBuffer(){
+uint* Raster::getBuffer(){
 	return this->pBuffer;
 }
 
 int Raster::getBufferSize(){
 	return (this->iWidth * this->iHeight * sizeof(Pixel));	// sizeof(Pixel) need 4 byte
-}
-
-void Raster::drawImage(int x, int y, const Image* image){
-	int left = Math::getMax(x, 0);
-	int top = Math::getMax(y, 0);
-
-	int right = Math::getMin(x + image->getWidth(), this->iWidth);
-	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
-
-	for(int i = left; i < right; i++){
-		for(int j = top; j < bottom; j++){
-			Pixel pixel = image->getPixelAt(i - left, j - top);
-			setPixelEx(i, j, pixel);
-		}
-	}
-}
-
-void Raster::drawImage(int x, int y, int startX, int startY, int width, int height, const Image* image){
-
-	int left = Math::getMax(x, 0);
-	int top = Math::getMax(y, 0);
-
-	int right = Math::getMin(x + width, this->iWidth);
-	int bottom = Math::getMin(y + height, this->iHeight);
-
-	for(int i = left; i < right; i++){
-		for(int j = top; j < bottom; j++){
-			Pixel pixel = image->getPixelAt(i - left + startX, j - top + startY);
-			setPixelEx(i, j, pixel);
-		}
-	}
-}
-
-void Raster::drawImageWithColorKey(int x, int y, const Image* image, Pixel key){
-	int left = Math::getMax(x, 0);
-	int top = Math::getMax(y, 0);
-
-	int right = Math::getMin(x + image->getWidth(), this->iWidth);
-	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
-
-	for(int i = left; i < right; i++){
-		for(int j = top; j < bottom; j++){
-			Pixel pixel = image->getPixelAt(i - left, j - top);
-			
-			if(pixel != key){
-				setPixelEx(i, j, pixel);
-			}
-		}
-	}
-}
-
-void Raster::drawImageAlphaTest(int x, int y, const Image* image, byte alpha){
-	int left = Math::getMax(x, 0);
-	int top = Math::getMax(y, 0);
-
-	int right = Math::getMin(x + image->getWidth(), this->iWidth);
-	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
-
-	for(int i = left; i < right; i++){
-		for(int j = top; j < bottom; j++){
-			Pixel pixel = image->getPixelAt(i - left, j - top);
-
-			if(alpha < pixel.getA()){
-				setPixelEx(i, j, pixel);
-			}
-		}
-	}
-}
-
-void Raster::drawImageAlphaBlend(int x, int y, const Image* image, float alpha){
-	int left = Math::getMax(x, 0);
-	int top = Math::getMax(y, 0);
-
-	int right = Math::getMin(x + image->getWidth(), this->iWidth);
-	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
-
-	for(int i = left; i < right; i++){
-		for(int j = top; j < bottom; j++){
-			Pixel imagePixel = image->getPixelAt(i - left, j - top);
-			Pixel backgroundPixel = this->getPixel(i, j);
-
-			Pixel pixel = Pixel::Interpolation(backgroundPixel, imagePixel, imagePixel.getA() / 255.0f * alpha);
-			setPixelEx(i, j, pixel);
-		}
-	}
-}
-
-void Raster::drawImageAlpha(int x, int y, const Image* image, float alpha){
-	int left = Math::getMax(x, 0);
-	int top = Math::getMax(y, 0);
-
-	int right = Math::getMin(x + image->getWidth(), this->iWidth);
-	int bottom = Math::getMin(y + image->getHeight(), this->iHeight);
-
-	for(int i = left; i < right; i++){
-		for(int j = top; j < bottom; j++){
-			Pixel imagePixel = image->getPixelAt(i - left, j - top);
-			Pixel backgroundPixel = this->getPixel(i, j);
-
-			Pixel pixel = Pixel::Interpolation(backgroundPixel, imagePixel, alpha);
-			setPixelEx(i, j, pixel);
-		}
-	}
-}
-
-void Raster::drawImageScale(int x, int y, int width, int height, const Image* image){
-	float scaleX = (float)image->getWidth() / (float)width;
-	float scaleY = (float)image->getHeight() / (float)height;
-
-	for(int i = x; i < x + width; i++){
-		for(int j = y; j < y + height; j++){
-			float sizeX = (i - x) * scaleX;
-			float sizeY = (j - y) * scaleY;
-
-			Pixel pixel = image->getPixelAt(sizeX, sizeY);
-			setPixelEx(i, j, pixel);
-		}
-	}
 }

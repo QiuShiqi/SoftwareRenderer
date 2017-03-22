@@ -16,12 +16,19 @@ Image::Image(int width, int height, void* data){
 }
 
 Image::~Image(){
-	delete this->uiBuffer;
+	delete []this->uiBuffer;
 	this->uiBuffer = nullptr;
 }
 
 Pixel Image::getPixelAt(int x, int y) const{
 	return Pixel(this->uiBuffer[y * this->iWidth + x]);
+}
+
+Pixel Image::getPixelUV(float u, float v){
+	float x = u * this->iWidth;
+	float y = v * this->iHeight;
+
+	return this->getPixelAt(x, y);
 }
 
 int Image::getWidth() const{

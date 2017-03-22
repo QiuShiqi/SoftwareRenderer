@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+typedef unsigned int uint;
+
 template<class T>
 class Vector2{
 private:
@@ -18,11 +20,11 @@ public:
 
 	};
 
-	T getX(){
+	T getX() const{
 		return this->tX;
 	}
 
-	T getY(){
+	T getY() const{
 		return this->tY;
 	}
 
@@ -43,17 +45,17 @@ public:
 
 	template<class T>
 	static T getMin(T a, T b){
-		return a < b ? a : b;
+		return a <= b ? a : b;
 	}
 
 	template<class T>
 	static T getMax(T a, T b){
-		return a > b ? a : b;
+		return a >= b ? a : b;
 	}
 
 	template<class T>
 	static T getAbs(T a){
-		return a > 0 ? a : -a;
+		return a >= 0 ? a : -a;
 	}
 
 	template<class T>

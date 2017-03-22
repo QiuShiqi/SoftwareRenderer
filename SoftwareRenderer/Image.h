@@ -13,6 +13,7 @@ public:
 	~Image();
 
 	Pixel getPixelAt(int x, int y) const;
+	Pixel getPixelUV(float u, float v);
 
 	int getWidth() const;
 	int getHeight() const;

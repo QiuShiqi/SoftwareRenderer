@@ -29,7 +29,7 @@ LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd){
-
+	
 	// Register window
 	WNDCLASSEX wndClass = {0};
 	wndClass.cbSize = sizeof(WNDCLASSEX);
@@ -93,7 +93,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// Raster
 	Raster raster(width, height, buffer);
 	Image* image = Loader::loadImage("Images\\bg.png");
-	Image* imageScale = Loader::loadImage("Images\\scale.jpg");
+	Image* imageUV = Loader::loadImage("Images\\scale.jpg");
 
 	// Message loop
 	MSG msg = {0};
@@ -112,7 +112,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// Draw
 		raster.drawImage(0, 0, image);
-		raster.drawImageScale(100, 100, 250, 250, imageScale);
+
+		Vertex vertex0(
+			int2(10, 10), int2(10, 110), int2(110, 110),
+			Pixel(), Pixel(), Pixel(),
+			float2(0.0f, 0.0f), float2(0.0f, 1.0f), float2(1.0f, 1.0f)
+			);
+		
+		Vertex vertex1(
+			int2(10, 10), int2(110, 110), int2(110, 10),
+			Pixel(), Pixel(), Pixel(),
+			float2(0.0f, 0.0f), float2(1.0f, 1.0f), float2(1.0f, 0.0f)
+			);
+		
+		raster.drawTriangle(vertex0, imageUV);
+		raster.drawTriangle(vertex1, imageUV);
 
 		// Copy data
 		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
@@ -120,7 +134,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 
 	// recover
-	recover(imageScale);
+	recover(imageUV);
 	recover(image);
 
 	return 0;

@@ -24,9 +24,6 @@
     <ClInclude Include="Raster.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Pixel.h">
-      <Filter>头文件\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>头文件\Base</Filter>
     </ClInclude>
@@ -42,13 +39,16 @@
     <ClInclude Include="Image.h">
       <Filter>头文件\Base</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>头文件\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Pixel.h">
+      <Filter>头文件\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raster.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Pixel.cpp">
-      <Filter>源文件\Base</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>源文件\Base</Filter>
@@ -63,6 +63,12 @@
       <Filter>源文件\Base</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>源文件\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Pixel.cpp">
       <Filter>源文件\Base</Filter>
     </ClCompile>
   </ItemGroup>

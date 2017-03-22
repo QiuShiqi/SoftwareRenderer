@@ -1,13 +1,16 @@
 #include "Span.h"
 
-Span::Span(int startX, int endX, int y, Pixel pixelStart, Pixel pixelEnd) : iY(y) {
+Span::Span(int startX, int endX, int y, Pixel pixelStart, Pixel pixelEnd, float2 startUV, float2 endUV) : iY(y) {
 
 	if(startX < endX){
 		this->iStartX = startX;
 		this->iEndX = endX;
-
+		
 		this->pixelStart = pixelStart;
 		this->pixelEnd = pixelEnd;
+
+		this->fStartUV = startUV;
+		this->fEndUV = endUV;
 
 	}else{
 		this->iStartX = endX;
@@ -15,6 +18,9 @@ Span::Span(int startX, int endX, int y, Pixel pixelStart, Pixel pixelEnd) : iY(y
 
 		this->pixelStart = pixelEnd;
 		this->pixelEnd = pixelStart;
+
+		this->fStartUV = endUV;
+		this->fEndUV = startUV;
 	}
 }
 
@@ -36,4 +42,12 @@ Pixel Span::getPixelStart(){
 
 Pixel Span::getPixelEnd(){
 	return this->pixelEnd;
+}
+
+float2 Span::getStartUV(){
+	return this->fStartUV;
+}
+
+float2 Span::getEndUV(){
+	return this->fEndUV;
 }
