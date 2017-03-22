@@ -90,27 +90,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	memset(buffer, 0, width * height * 4);
 
-	// Raster
+	// Initialize raster
 	Raster raster(width, height, buffer);
 	Image* image = Loader::loadImage("Images\\bg.png");
 	Image* imageUV = Loader::loadImage("Images\\scale.jpg");
 
-	Vertex vertex0[] = {
+	Vertex vertex[] = {
 		Vertex(int2(10, 10), Pixel(), float2(0.0f, 0.0f)),
 		Vertex(int2(10, 210), Pixel(), float2(0.0f, 1.0f)),
-		Vertex(int2(210, 210), Pixel(), float2(1.0f, 1.0f))
-	};
+		Vertex(int2(210, 210), Pixel(), float2(1.0f, 1.0f)),
 
-	Vertex vertex1[] = {
 		Vertex(int2(10, 10), Pixel(), float2(0.0f, 0.0f)),
 		Vertex(int2(210, 210), Pixel(), float2(1.0f, 1.0f)),
 		Vertex(int2(210, 10), Pixel(), float2(1.0f, 0.0f))
 	};
 
 	StateMachine stateMachine;
-	stateMachine.vertexPointer(StateMachine::PT_POSITION, 2, StateMachine::DT_FLOAT, sizeof(Vertex), &(vertex0[0].point));
-	stateMachine.vertexPointer(StateMachine::PT_COLOR, 4, StateMachine::DT_BYTE, sizeof(Vertex), &(vertex0[0].pixel));
-	stateMachine.vertexPointer(StateMachine::PT_UV, 4, StateMachine::DT_FLOAT, sizeof(Vertex), &(vertex0[0].uv));
+	stateMachine.vertexPointer(StateMachine::PT_POSITION, 2, StateMachine::DT_FLOAT, sizeof(Vertex), &(vertex[0].point));
+	stateMachine.vertexPointer(StateMachine::PT_COLOR, 4, StateMachine::DT_BYTE, sizeof(Vertex), &(vertex[0].pixel));
+	stateMachine.vertexPointer(StateMachine::PT_UV, 4, StateMachine::DT_FLOAT, sizeof(Vertex), &(vertex[0].uv));
+
+	static float translate = 0.0f;
+	matrix3 matrix;
 
 	// Message loop
 	MSG msg = {0};
@@ -130,8 +131,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// Draw
 		raster.drawImage(0, 0, image);
 
-		raster.drawTriangle(vertex0[0], vertex0[1], vertex0[2], imageUV);
-		raster.drawTriangle(vertex1[0], vertex1[1], vertex1[2], imageUV);
+		matrix.translate(0, translate);
+		translate += 1.0f;
+
+		for(int i = 0; i < 6; i++){
+			float3 position(vertex[i].point.getX(), vertex[i].point.getY(), 1.0f);
+			position *= matrix;
+
+			vertex[i].point.setX(position.getX());
+			vertex[i].point.setY(position.getY());
+		}
+
+		raster.drawTriangle(vertex[0], vertex[1], vertex[2], imageUV);
+		raster.drawTriangle(vertex[3], vertex[4], vertex[5], imageUV);
 
 		//raster.drawArrays(Raster::DM_TRIANGES, 0, 3);
 
