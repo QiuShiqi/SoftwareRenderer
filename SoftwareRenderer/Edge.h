@@ -6,21 +6,19 @@
 
 class Edge{
 private:
-	int iStartX, iStartY;
+	float3 fStart;
 	float2 fStartUV;
 
-	int iEndX, iEndY;
+	float3 fEnd;
 	float2 fEndUV;
 
 	Pixel pixelStart, pixelEnd;
 
 public:
-	Edge(int startX, int startY, int endX, int endY, Pixel pixelStart, Pixel pixelEnd, float2 startUV, float2 endUV);
+	Edge(float3 start, float3 end, Pixel pixelStart, Pixel pixelEnd, float2 startUV, float2 endUV);
 
-	int getStartX();
-	int getStartY();
-	int getEndX();
-	int getEndY();
+	float3 getStart();
+	float3 getEnd();
 
 	Pixel getPixelStart();
 	Pixel getPixelEnd();

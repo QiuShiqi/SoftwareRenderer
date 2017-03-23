@@ -6,11 +6,11 @@
 
 class Vertex{
 public:
-	int2 point;
+	float3 point;
 	Pixel pixel;
 	float2 uv;
 public:
-	Vertex(int2 point, Pixel pixel, float2 uv);
+	Vertex(float3 point, Pixel pixel, float2 uv);
 
 };
 

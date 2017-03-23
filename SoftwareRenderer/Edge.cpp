@@ -1,27 +1,23 @@
 #include "Edge.h"
 #include "Math.h"
 
-Edge::Edge(int startX, int startY, int endX, int endY, Pixel pixelStart, Pixel pixelEnd, float2 startUV, float2 endUV){
+Edge::Edge(float3 start, float3 end, Pixel pixelStart, Pixel pixelEnd, float2 startUV, float2 endUV){
 
-	if(startY < endY){
-		this->iStartX = startX;
-		this->iStartY = startY;
+	if(start.getY() < end.getY()){
+		this->fStart = start;
 		this->fStartUV = startUV;
 
-		this->iEndX = endX;
-		this->iEndY = endY;
+		this->fEnd = end;
 		this->fEndUV = endUV;
 
 		this->pixelStart = pixelStart;
 		this->pixelEnd = pixelEnd;
 
 	}else{
-		this->iStartX = endX;
-		this->iStartY = endY;
+		this->fStart = end;
 		this->fStartUV = endUV;
 
-		this->iEndX = startX;
-		this->iEndY = startY;
+		this->fEnd = start;
 		this->fEndUV = startUV;
 
 		this->pixelStart = pixelEnd;
@@ -29,20 +25,12 @@ Edge::Edge(int startX, int startY, int endX, int endY, Pixel pixelStart, Pixel p
 	}
 }
 
-int Edge::getStartX(){
-	return this->iStartX;
+float3 Edge::getStart(){
+	return this->fStart;
 }
 
-int Edge::getStartY(){
-	return this->iStartY;
-}
-
-int Edge::getEndX(){
-	return this->iEndX;
-}
-
-int Edge::getEndY(){
-	return this->iEndY;
+float3 Edge::getEnd(){
+	return this->fEnd;
 }
 
 Pixel Edge::getPixelStart(){

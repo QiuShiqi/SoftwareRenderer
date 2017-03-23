@@ -27,9 +27,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Raster.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>头文件\Base</Filter>
     </ClInclude>
@@ -51,17 +48,11 @@
     <ClInclude Include="Loader.h">
       <Filter>头文件\Module</Filter>
     </ClInclude>
-    <ClInclude Include="StateMachine.h">
+    <ClInclude Include="Raster.h">
       <Filter>头文件\Module</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Raster.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>源文件\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Span.cpp">
       <Filter>源文件\Base</Filter>
     </ClCompile>
@@ -77,10 +68,13 @@
     <ClCompile Include="Pixel.cpp">
       <Filter>源文件\Base</Filter>
     </ClCompile>
-    <ClCompile Include="StateMachine.cpp">
+    <ClCompile Include="Loader.cpp">
       <Filter>源文件\Module</Filter>
     </ClCompile>
-    <ClCompile Include="Loader.cpp">
+    <ClCompile Include="Main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Raster.cpp">
       <Filter>源文件\Module</Filter>
     </ClCompile>
   </ItemGroup>

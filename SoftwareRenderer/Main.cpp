@@ -95,24 +95,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Image* image = Loader::loadImage("Images\\bg.png");
 	Image* imageUV = Loader::loadImage("Images\\scale.jpg");
 
-	Vertex vertex[] = {
-		Vertex(int2(10, 10), Pixel(), float2(0.0f, 0.0f)),
-		Vertex(int2(10, 210), Pixel(), float2(0.0f, 1.0f)),
-		Vertex(int2(210, 210), Pixel(), float2(1.0f, 1.0f)),
-
-		Vertex(int2(10, 10), Pixel(), float2(0.0f, 0.0f)),
-		Vertex(int2(210, 210), Pixel(), float2(1.0f, 1.0f)),
-		Vertex(int2(210, 10), Pixel(), float2(1.0f, 0.0f))
-	};
-
-	StateMachine stateMachine;
-	stateMachine.vertexPointer(StateMachine::PT_POSITION, 2, StateMachine::DT_FLOAT, sizeof(Vertex), &(vertex[0].point));
-	stateMachine.vertexPointer(StateMachine::PT_COLOR, 4, StateMachine::DT_BYTE, sizeof(Vertex), &(vertex[0].pixel));
-	stateMachine.vertexPointer(StateMachine::PT_UV, 4, StateMachine::DT_FLOAT, sizeof(Vertex), &(vertex[0].uv));
-
-	static float translate = 0.0f;
-	matrix3 matrix;
-
 	// Message loop
 	MSG msg = {0};
 
@@ -131,24 +113,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		// Draw
 		raster.drawImage(0, 0, image);
 
-		matrix.translate(0, translate);
-		translate += 1.0f;
+		Vertex vertex[] = {
+			Vertex(float3(-10, -10, 1), Pixel(), float2(0.0f, 0.0f)),
+			Vertex(float3(210, 210, 1), Pixel(), float2(2.0f, 2.0f)),
+			Vertex(float3(210, -10, 1), Pixel(), float2(2.0f, 0.0f)),
 
-		for(int i = 0; i < 6; i++){
-			float3 position(vertex[i].point.getX(), vertex[i].point.getY(), 1.0f);
-			position *= matrix;
+			Vertex(float3(-10, -10, 1), Pixel(), float2(0.0f, 0.0f)),
+			Vertex(float3(210, 210, 1), Pixel(), float2(2.0f, 2.0f)),
+			Vertex(float3(-10, 210, 1), Pixel(), float2(0.0f, 2.0f))
+		};
 
-			vertex[i].point.setX(position.getX());
-			vertex[i].point.setY(position.getY());
-		}
+		static float angles = 0.0f;
+		matrix3 matrix;
+		matrix.translate(-110, -110);
+
+		matrix3 rotate;
+		rotate.rotate(angles);
+
+		matrix3 scale;
+		scale.scale(0.5f, 0.5f);
+
+		matrix3 translate;
+		translate.translate(110, 110);
+
+		matrix3 all = matrix * (rotate * scale * translate);
+		angles += 1.0f;
+
+		raster.setMatrix(all);
 
 		raster.drawTriangle(vertex[0], vertex[1], vertex[2], imageUV);
 		raster.drawTriangle(vertex[3], vertex[4], vertex[5], imageUV);
 
-		//raster.drawArrays(Raster::DM_TRIANGES, 0, 3);
-
 		// Copy data
-		memcpy(buffer, raster.getBuffer(), raster.getBufferSize());
 		BitBlt(hDC, 0, 0, width, height, hMem, 0, 0, SRCCOPY);
 	}
 

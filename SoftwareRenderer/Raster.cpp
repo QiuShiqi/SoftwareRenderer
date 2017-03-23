@@ -12,22 +12,18 @@ Raster::~Raster(){
 
 void Raster::drawTriangle(const Vertex& vertex0, const Vertex& vertex1, const Vertex& vertex2, Image* image){
 
-	if(!(this->isInRect(vertex0.point)) && !(this->isInRect(vertex1.point)) && !(this->isInRect(vertex2.point))){
-		return;
-	}
-
 	Edge edges[3] = {
-		Edge(vertex0.point.getX(), vertex0.point.getY(), vertex1.point.getX(), vertex1.point.getY(), vertex0.pixel, vertex1.pixel, vertex0.uv, vertex1.uv),
-		Edge(vertex1.point.getX(), vertex1.point.getY(), vertex2.point.getX(), vertex2.point.getY(), vertex1.pixel, vertex2.pixel, vertex1.uv, vertex2.uv),
-		Edge(vertex2.point.getX(), vertex2.point.getY(), vertex0.point.getX(), vertex0.point.getY(), vertex2.pixel, vertex0.pixel, vertex2.uv, vertex0.uv)
+		Edge(this->matrix * vertex0.point, this->matrix * vertex1.point, vertex0.pixel, vertex1.pixel, vertex0.uv, vertex1.uv),
+		Edge(this->matrix * vertex1.point, this->matrix * vertex2.point, vertex1.pixel, vertex2.pixel, vertex1.uv, vertex2.uv),
+		Edge(this->matrix * vertex2.point, this->matrix * vertex0.point, vertex2.pixel, vertex0.pixel, vertex2.uv, vertex0.uv),
 	};
 
 	// Find the longest edge
-	int length = edges[0].getEndY() - edges[0].getStartY();
+	int length = edges[0].getEnd().getY() - edges[0].getStart().getY();
 	int index = 0;
 
 	for(int i = 1; i < 3; i++){
-		int max = edges[i].getEndY() - edges[i].getStartY();
+		int max = edges[i].getEnd().getY() - edges[i].getStart().getY();
 
 		if(max > length){
 			length = max;
@@ -62,8 +58,8 @@ void Raster::drawImage(int x, int y, const Image* image){
 
 }
 
-void Raster::drawArrays(DRAWMODE type, int start, int count){
-
+void Raster::setMatrix(const matrix3& matrix){
+	this->matrix = matrix;
 }
 
 void Raster::setPixel(unsigned x, unsigned y, Pixel pixel){
@@ -111,37 +107,27 @@ void Raster::drawSpan(Span& span, Image* image){
 
 void Raster::drawEdge(Edge longEdge, Edge shortEdge, Image* image){
 
-	float offsetLongY = longEdge.getEndY() - longEdge.getStartY();
+	float offsetLongY = longEdge.getEnd().getY() - longEdge.getStart().getY();
 	if(offsetLongY == 0){
 		return;
 	}
 
-	float offsetShortY = shortEdge.getEndY() - shortEdge.getStartY();
+	float offsetShortY = shortEdge.getEnd().getY() - shortEdge.getStart().getY();
 	if(offsetShortY == 0){
 		return;
 	}
 
-	float offsetLongX = longEdge.getEndX() - longEdge.getStartX();
+	float offsetLongX = longEdge.getEnd().getX() - longEdge.getStart().getX();
 	float stepLong = 1.0f / offsetLongY;
-	float lengthLong = (float)(shortEdge.getStartY() - longEdge.getStartY()) / offsetLongY;
+	float lengthLong = (float)(shortEdge.getStart().getY() - longEdge.getStart().getY()) / offsetLongY;
 
-	// Horizontal crop image
-	int longStartY = Math::getMax(longEdge.getStartY(), 0);
-	int longEndY = Math::getMin(longEdge.getEndY(), this->iHeight);
-	lengthLong += (longStartY - longEdge.getStartY()) / offsetLongY;
-
-	float offsetShortX = shortEdge.getEndX() - shortEdge.getStartX();
+	float offsetShortX = shortEdge.getEnd().getX() - shortEdge.getStart().getX();
 	float stepShort = 1.0f / offsetShortY;
 	float lengthShort = 0;
 
-	// Horizontal crop image
-	int shortStartY = Math::getMax(shortEdge.getStartY(), 0);
-	int shortEndY = Math::getMin(shortEdge.getEndY(), this->iHeight);
-	lengthShort += (shortStartY - shortEdge.getStartY()) / offsetShortY;
-
-	for(int y = shortStartY; y < shortEndY; y++){
-		int startX = longEdge.getStartX() + (int)(lengthLong * offsetLongX);
-		int endX = shortEdge.getStartX() + (int)(lengthShort * offsetShortX);
+	for(int y = shortEdge.getStart().getY(); y < shortEdge.getEnd().getY(); y++){
+		int startX = longEdge.getStart().getX() + (int)(lengthLong * offsetLongX);
+		int endX = shortEdge.getStart().getX() + (int)(lengthShort * offsetShortX);
 
 		Pixel longEdgePixel = Pixel::Interpolation(longEdge.getPixelStart(), longEdge.getPixelEnd(), lengthLong);
 		Pixel shoreEdgePixel = Pixel::Interpolation(shortEdge.getPixelStart(), shortEdge.getPixelEnd(), lengthShort);
@@ -156,14 +142,6 @@ void Raster::drawEdge(Edge longEdge, Edge shortEdge, Image* image){
 		lengthShort += stepShort;
 	}
 
-}
-
-bool Raster::isInRect(int2 point){
-	if(point.getX() >= 0 && point.getX() <= this->iWidth && point.getY() >= 0 && point.getY() <= iHeight){
-		return true;
-	}else{
-		return false;
-	}
 }
 
 void Raster::clear(){
